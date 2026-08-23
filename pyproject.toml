@@ -33,9 +33,9 @@ include = ["src*"]
 
 [tool.pyright]
 include = ["src", "tests"]
-extraPaths = [".", "src"]
+extraPaths = ["."]
 
 [tool.pyrefly]
-include = ["src", "tests"]
-extraPaths = [".", "src"]
+project-includes = ["src", "tests"]
+search-path = ["."]
 
