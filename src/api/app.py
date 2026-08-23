@@ -504,6 +504,24 @@ def _build_routes(manager: RunManager, settings: Settings) -> list[Route]:
                                  f"{type(exc).__name__}: {exc}")
         return 200, {"pipeline_ready": True, "config": manager.config_view()}
 
+    async def chat(request: Request):
+        body = request.json()
+        query = str(body.get("query") or body.get("message") or "").strip()
+        if not query:
+            raise HttpError(400, "`query` or `message` is required.")
+        run_id = body.get("run_id")
+        history = body.get("history") or []
+
+        from src.chat.assistant import CaseworkerChatbot
+        chatbot = CaseworkerChatbot(settings, manager=manager)
+        response = await in_thread(
+            chatbot.answer,
+            query,
+            run_id=run_id,
+            history=history,
+        )
+        return 200, response.to_dict()
+
     return [
         ("GET", re.compile(r"^/$"), index),
         ("GET", re.compile(r"^/static/(?P<path>.+)$"), static),
@@ -523,6 +541,7 @@ def _build_routes(manager: RunManager, settings: Settings) -> list[Route]:
         ("GET", re.compile(r"^/api/approvals$"), pending),
         ("POST", re.compile(r"^/api/approvals/(?P<action_id>[^/]+)$"), decide),
         ("GET", re.compile(r"^/api/policy/search$"), policy_search),
+        ("POST", re.compile(r"^/api/chat$"), chat),
     ]
 
 

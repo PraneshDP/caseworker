@@ -69,7 +69,13 @@
     editReason: document.getElementById('edit-reason'),
     editCancel: document.getElementById('edit-cancel'),
     editSubmit: document.getElementById('edit-submit'),
-    toasts: document.getElementById('toasts')
+    toasts: document.getElementById('toasts'),
+
+    btnClearChat: document.getElementById('btn-clear-chat'),
+    chatMessages: document.getElementById('chat-messages'),
+    chatInput: document.getElementById('chat-input'),
+    btnChatSend: document.getElementById('btn-chat-send'),
+    chatSuggestions: document.getElementById('chat-suggestions')
   };
 
   // --- Initialization ---
@@ -683,6 +689,152 @@
     renderTrace();
   }
 
+  // --- Assistant Chatbot ---
+  let chatHistory = [];
+
+  function formatMarkdown(text) {
+    if (!text) return '';
+    let escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    
+    escaped = escaped.replace(/^### (.*$)/gim, '<h4 style="margin:6px 0 4px;font-size:13.5px;color:var(--text);">$1</h4>');
+    escaped = escaped.replace(/^## (.*$)/gim, '<h4 style="margin:8px 0 4px;font-size:14px;color:var(--text);">$1</h4>');
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    escaped = escaped.replace(/`([^`]+)`/g, '<code style="background:var(--surface-3);padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:11.5px;">$1</code>');
+    
+    const lines = escaped.split('\n');
+    let html = '';
+    let inList = false;
+    for (let line of lines) {
+      if (line.startsWith('- ') || line.startsWith('* ')) {
+        if (!inList) { html += '<ul style="margin:4px 0 6px 18px;padding:0;">'; inList = true; }
+        html += `<li>${line.substring(2)}</li>`;
+      } else if (/^\d+\.\s/.test(line)) {
+        if (!inList) { html += '<ol style="margin:4px 0 6px 18px;padding:0;">'; inList = true; }
+        html += `<li>${line.replace(/^\d+\.\s/, '')}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        if (line.trim().length > 0) {
+          html += `<p style="margin:4px 0;">${line}</p>`;
+        }
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  async function sendChatMessage(promptText) {
+    const text = (promptText || el.chatInput.value || '').trim();
+    if (!text) return;
+    el.chatInput.value = '';
+
+    // Append user message
+    const userBubble = document.createElement('div');
+    userBubble.className = 'chat-bubble chat-user';
+    userBubble.innerHTML = `
+      <div class="chat-bubble-header">
+        <span class="chat-author">You</span>
+      </div>
+      <div class="chat-bubble-body">
+        <p>${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+      </div>
+    `;
+    el.chatMessages.appendChild(userBubble);
+
+    // Typing indicator
+    const typingBubble = document.createElement('div');
+    typingBubble.className = 'chat-bubble chat-ai';
+    typingBubble.id = 'chat-typing-indicator';
+    typingBubble.innerHTML = `
+      <div class="chat-typing">
+        <span></span><span></span><span></span>
+      </div>
+    `;
+    el.chatMessages.appendChild(typingBubble);
+    el.chatMessages.scrollTop = el.chatMessages.scrollHeight;
+
+    chatHistory.push({ role: 'user', content: text });
+
+    try {
+      const res = await api('/api/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          query: text,
+          history: chatHistory,
+          run_id: (currentRunState && currentRunState.run_id) ? currentRunState.run_id : 'latest'
+        })
+      });
+
+      const typing = document.getElementById('chat-typing-indicator');
+      if (typing) typing.remove();
+
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'chat-bubble chat-ai';
+
+      let sourcesHtml = '';
+      if (res.sources && res.sources.length > 0) {
+        sourcesHtml = `
+          <div class="chat-sources">
+            <span class="dim" style="font-size:10.5px;margin-right:2px;">Sources:</span>
+            ${res.sources.map(s => `<span class="tag info">${s.title}</span>`).join(' ')}
+          </div>
+        `;
+      }
+
+      const modeBadge = (res.mode === 'llm') 
+        ? '<span class="badge" style="background:#e0f2fe;color:#0284c7;">Gemini 3.6</span>'
+        : '<span class="badge">Grounded</span>';
+
+      aiBubble.innerHTML = `
+        <div class="chat-bubble-header">
+          <span class="chat-author">Assistant</span>
+          ${modeBadge}
+        </div>
+        <div class="chat-bubble-body">
+          ${formatMarkdown(res.reply)}
+          ${sourcesHtml}
+        </div>
+      `;
+      el.chatMessages.appendChild(aiBubble);
+      chatHistory.push({ role: 'assistant', content: res.reply });
+    } catch (err) {
+      const typing = document.getElementById('chat-typing-indicator');
+      if (typing) typing.remove();
+
+      const errorBubble = document.createElement('div');
+      errorBubble.className = 'chat-bubble chat-ai';
+      errorBubble.innerHTML = `
+        <div class="chat-bubble-header">
+          <span class="chat-author">Assistant</span>
+          <span class="tag danger">Error</span>
+        </div>
+        <div class="chat-bubble-body">
+          <p style="color:var(--danger);">Could not retrieve answer: ${err.message}</p>
+        </div>
+      `;
+      el.chatMessages.appendChild(errorBubble);
+    }
+
+    el.chatMessages.scrollTop = el.chatMessages.scrollHeight;
+  }
+
+  function clearChat() {
+    chatHistory = [];
+    el.chatMessages.innerHTML = `
+      <div class="chat-bubble chat-ai">
+        <div class="chat-bubble-header">
+          <span class="chat-author">Assistant</span>
+          <span class="badge">Grounded</span>
+        </div>
+        <div class="chat-bubble-body">
+          <p>Chat cleared. Ask any question or select a suggestion chip above to clear your doubts!</p>
+        </div>
+      </div>
+    `;
+  }
 
   function setupEventListeners() {
     el.tabs.forEach(tab => {
@@ -724,6 +876,20 @@
     el.btnPolicy.addEventListener('click', searchPolicy);
     el.policyQ.addEventListener('keydown', e => { if (e.key === 'Enter') searchPolicy(); });
 
+    // Chatbot Event Listeners
+    if (el.btnChatSend) el.btnChatSend.addEventListener('click', () => sendChatMessage());
+    if (el.chatInput) el.chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatMessage(); });
+    if (el.btnClearChat) el.btnClearChat.addEventListener('click', clearChat);
+
+    if (el.chatSuggestions) {
+      el.chatSuggestions.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const prompt = btn.dataset.prompt;
+          if (prompt) sendChatMessage(prompt);
+        });
+      });
+    }
+
     el.editClose.addEventListener('click', closeEditModal);
     el.editCancel.addEventListener('click', closeEditModal);
     el.editSubmit.addEventListener('click', () => {
@@ -754,3 +920,4 @@
     init();
   }
 })();
+

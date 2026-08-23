@@ -80,6 +80,7 @@
       <button class="tab" data-tab="audit" role="tab">Audit trail</button>
       <button class="tab" data-tab="guardrails" role="tab">Guardrails</button>
       <button class="tab" data-tab="policy" role="tab">Policy</button>
+      <button class="tab" data-tab="assistant" role="tab">AI Assistant</button>
     </nav>
 
     <!-- ---------- HERO: the HITL moment ---------- -->
@@ -153,6 +154,40 @@
       <div class="scroll" id="policy-body">
         <p class="dim">Hybrid retrieval: BM25 + dense embeddings fused with
            Reciprocal Rank Fusion. This is the same index the agent cites from.</p>
+      </div>
+    </div>
+
+    <!-- ---------- AI Assistant Chatbot ---------- -->
+    <div class="panel" id="panel-assistant" role="tabpanel">
+      <div class="panel-head">
+        <h3>Caseworker AI Assistant &middot; Clear Your Doubts</h3>
+        <button class="btn btn-small btn-ghost" id="btn-clear-chat" type="button">Clear chat</button>
+      </div>
+      <div class="chat-container">
+        <div class="chat-suggestions" id="chat-suggestions">
+          <span class="dim" style="font-size:11px; margin-right:4px;">Quick questions:</span>
+          <button class="chip chip-btn" data-prompt="Why was RF-2026-0412 with William Iverson handed off to a caseworker?">William Iverson (RF-2026-0412)</button>
+          <button class="chip chip-btn" data-prompt="Why was RF-2026-0415 escalated under Section 3.2?">Fraud Escalation (RF-2026-0415)</button>
+          <button class="chip chip-btn" data-prompt="What safeguarding rules apply to households with minor children under ACA-2026/2 s.3.9?">Safeguarding Rules</button>
+          <button class="chip chip-btn" data-prompt="Summarize the morning run triage results and actions.">Run Summary</button>
+          <button class="chip chip-btn" data-prompt="How does the cryptographic SHA-256 audit ledger verify integrity?">Audit Chain</button>
+        </div>
+        <div class="chat-messages scroll" id="chat-messages">
+          <div class="chat-bubble chat-ai">
+            <div class="chat-bubble-header">
+              <span class="chat-author">Assistant</span>
+              <span class="badge">Grounded</span>
+            </div>
+            <div class="chat-bubble-body">
+              <p>Hello! I am your <strong>Caseworker Assistant</strong>. I can clear any doubts regarding morning run results, out-of-authority escalations (ACA-2026/1), child safeguarding protections (ACA-2026/2 s.3.9), or resident history.</p>
+              <p style="margin-top:6px;">Click a quick question above or type your doubt below!</p>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input id="chat-input" type="text" placeholder="Ask any doubt about run outcomes, referrals, or policy rules..." autocomplete="off" />
+          <button class="btn btn-primary" id="btn-chat-send" type="button">Ask</button>
+        </div>
       </div>
     </div>
 
