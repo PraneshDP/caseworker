@@ -1,0 +1,81 @@
+{
+  "hand_off_type": "safeguarding_caseworker_handoff",
+  "policy_rule": "ACA-2026/2 s.3.9",
+  "is_supervisor_escalation": false,
+  "referral": {
+    "referral_id": "RF-2026-0412",
+    "resident_ref": "R-20500",
+    "received_at": "2026-03-17T04:42:00",
+    "source": "Housing Options",
+    "urgency": "Standard",
+    "requested_action": "Review award",
+    "summary": "Resident reports rent arrears following reduction in hours. Requests review of award."
+  },
+  "safeguarding": {
+    "reason": "Household includes 1 person(s) under 18: William Iverson (Son/daughter, b. 2021-02-26, age 5). Safeguarding rule ACA-2026/2 s.3.9 prohibits automated drafting of triage notes; referral must be handed to a caseworker under s.3.2.",
+    "children_identified": [
+      {
+        "name": "William Iverson",
+        "date_of_birth": "2021-02-26",
+        "relationship": "Son/daughter",
+        "age": 5
+      }
+    ]
+  },
+  "preserved_work": {
+    "assessment": {
+      "category": "Income change",
+      "routing": "Assessment team",
+      "priority": "Same day",
+      "priority_rationale": "The resident has reported financial detriment.",
+      "matched_on": "reduction in hours",
+      "referrer_urgency": "Standard"
+    },
+    "resident_context": "Resident R-20500 — status Active, benefit HSP-A, district Ash Hill.\nCurrent award: 988.04 per month.\nHousehold (2):\n  - Elizabeth Whitlock — Applicant — b. 1964-05-25, age 61\n  - William Iverson — Son/daughter — b. 2021-02-26, age 5\nMost recent case events (4 of 4):\n  - 2025-08-21  Note added — Referred to employment support.\n  - 2025-06-21  Evidence received — Award unchanged following review.\n  - 2025-05-04  Contact logged — Documents received and filed.\n  - 2025-03-18  Address change recorded — Referred to employment support.",
+    "household_members": [
+      {
+        "name": "Elizabeth Whitlock",
+        "date_of_birth": "1964-05-25",
+        "relationship": "Applicant"
+      },
+      {
+        "name": "William Iverson",
+        "date_of_birth": "2021-02-26",
+        "relationship": "Son/daughter"
+      }
+    ],
+    "actions_taken": [
+      {
+        "order": 1,
+        "action": "Read RF-2026-0412 (Housing Options) for resident R-20500.",
+        "provision": "3.1",
+        "inputs": "The overnight queue entry for RF-2026-0412.",
+        "result": "{\"referral_id\": \"RF-2026-0412\", \"resident_ref\": \"R-20500\", \"fields_read\": [\"referral_id\", \"received_at\", \"resident_ref\", \"source\", \"summary\", \"requested_action\", \"urgency\"], \"requested_action\": \"Review award\", \"referrer_urgency\": \"Standard\", \"redacted_fields\": [], \"read_at\": \"2026-08-23T13:14:35\"}",
+        "at": "2026-08-23T13:14:35.275330"
+      },
+      {
+        "order": 2,
+        "action": "Retrieve history, household composition and case events for R-20500.",
+        "provision": "3.1",
+        "inputs": "Resident R-20500 from api",
+        "result": "{\"resident_ref\": \"R-20500\", \"available\": true, \"status\": \"Active\", \"benefit_code\": \"HSP-A\", \"district\": \"Ash Hill\", \"award_monthly\": 988.04, \"household_size\": 2, \"household\": [{\"name\": \"Elizabeth Whitlock\", \"date_of_birth\": \"1964-05-25\", \"relationship\": \"Applicant\"}, {\"name\": \"William Iverson\", \"date_of_birth\": \"2021-02-26\", \"relationship\": \"Son/daughter\"}], \"events\": [{\"date\": \"2025-03-18\", \"type\": \"Address change recorded\", \"detail\": \"Referred to employment support.\"}, {\"date\": \"2025-05-04\", \"type\": \"Contact logged\", \"detail\": \"Documents received and filed.\"}, {\"date\": \"2025-06-21\", \"type\": \"Evidence received\", \"detail\": \"Award unchanged following review.\"}, {\"date\": \"2025-08-21\", \"type\": \"Note added\", \"detail\": \"Referred to employment support.\"}], \"error\": \"\", \"source\": \"api\", \"retrieved_at\": \"2026-08-23T12:26:45.877044\", \"latency_ms\": 232.2}",
+        "at": "2026-08-23T13:14:35.275711"
+      },
+      {
+        "order": 3,
+        "action": "Categorise as Income change, route to Assessment team, priority Same day.",
+        "provision": "3.1",
+        "inputs": "The referral text and the resident's record from api.",
+        "result": "{\"category\": \"Income change\", \"routing\": \"Assessment team\", \"priority\": \"Same day\", \"priority_rationale\": \"The resident has reported financial detriment.\", \"matched_on\": \"reduction in hours\", \"referrer_urgency\": \"Standard\"}",
+        "at": "2026-08-23T13:14:35.276099"
+      }
+    ],
+    "data_quality_notes": []
+  },
+  "caseworker_action": "Caseworker to review referral and resident history, assess safeguarding implications, and draft the triage note exercising human judgment.",
+  "provenance": {
+    "run_id": "38dca05d",
+    "actor": "human:j.alvarez",
+    "created_at": "2026-08-23T13:14:35"
+  }
+}

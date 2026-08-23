@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Caseworker Morning Console</title>
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">CW</div>
+    <div class="brand-text">
+      <h1>Caseworker Morning Console</h1>
+      <p>Agentic case processing with deterministic risk gating and human approval</p>
+    </div>
+  </div>
+
+  <div class="topbar-meta">
+    <span class="chip" id="chip-threshold" title="Review threshold">&tau; &mdash;</span>
+    <span class="chip" id="chip-model" title="Planning model">model &mdash;</span>
+    <span class="chip" id="chip-chain" title="Audit hash chain">chain &mdash;</span>
+    <span class="status-pill" id="status-pill" role="status" aria-live="polite">
+      <i class="dot" aria-hidden="true"></i><span id="status-text">idle</span>
+    </span>
+  </div>
+
+  <div class="topbar-actions">
+    <label class="field">
+      <span class="field-label">Reviewer</span>
+      <input id="actor" type="text" placeholder="e.g. j.alvarez" autocomplete="off" />
+    </label>
+    <label class="toggle" title="Executes gated actions with no human review. Recorded as auto_approved_bypass, never as an approval.">
+      <input type="checkbox" id="bypass" />
+      <span>Bypass&nbsp;review</span>
+    </label>
+    <button id="btn-start" class="btn btn-primary" type="button">Start morning run</button>
+    <button id="btn-cancel" class="btn btn-ghost" type="button" disabled>Cancel</button>
+  </div>
+</header>
+
+<div id="banners"></div>
+
+<main class="layout">
+
+  <!-- ================= LEFT: progress + caseload ================= -->
+  <aside class="col col-left">
+
+    <section class="card">
+      <header class="card-head">
+        <h2>Run progress</h2>
+        <span class="mono dim" id="run-id">no run</span>
+      </header>
+      <div class="card-body">
+        <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+        <p class="progress-label"><span id="progress-text">Idle &mdash; press “Start morning run”.</span></p>
+        <dl class="stats" id="stats"></dl>
+      </div>
+    </section>
+
+    <section class="card grow">
+      <header class="card-head">
+        <h2>Caseload</h2>
+        <span class="badge" id="case-count">0</span>
+      </header>
+      <div class="card-body scroll" id="caseload"></div>
+    </section>
+
+  </aside>
+
+  <!-- ================= CENTER: the work ================= -->
+  <section class="col col-center">
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="review" role="tab">
+        Human review <span class="tab-count" id="tab-count-review">0</span>
+      </button>
+      <button class="tab" data-tab="actions" role="tab">Actions</button>
+      <button class="tab" data-tab="audit" role="tab">Audit trail</button>
+      <button class="tab" data-tab="guardrails" role="tab">Guardrails</button>
+      <button class="tab" data-tab="policy" role="tab">Policy</button>
+    </nav>
+
+    <!-- ---------- HERO: the HITL moment ---------- -->
+    <div class="panel active" id="panel-review" role="tabpanel">
+      <div id="review-empty" class="empty">
+        <div class="empty-mark" aria-hidden="true">&#9207;</div>
+        <h3>Nothing is waiting on you</h3>
+        <p>When the agent proposes something the guardrails will not let it do
+           unsupervised, the work <strong>stops here</strong> and the decision
+           appears in this panel.</p>
+        <ul class="empty-legend">
+          <li><span class="layer-dot layer-hard_block"></span><b>Hard block</b> &mdash; action type always needs a human, no score can clear it</li>
+          <li><span class="layer-dot layer-unknown_action"></span><b>Unknown action</b> &mdash; unrecognised effect, fails closed</li>
+          <li><span class="layer-dot layer-forced_review"></span><b>Forced review</b> &mdash; a mandatory signal fired (injection, unverified citation, escalation)</li>
+          <li><span class="layer-dot layer-score_threshold"></span><b>Score threshold</b> &mdash; weighted risk reached &tau;</li>
+        </ul>
+      </div>
+      <div id="review-stack"></div>
+    </div>
+
+    <!-- ---------- Actions ---------- -->
+    <div class="panel" id="panel-actions" role="tabpanel">
+      <div class="panel-head">
+        <h3>Every action proposed this run</h3>
+        <div class="filters" id="action-filters">
+          <button class="pill active" data-filter="all">All</button>
+          <button class="pill" data-filter="gated">Gated</button>
+          <button class="pill" data-filter="executed">Executed</button>
+          <button class="pill" data-filter="blocked">Not executed</button>
+        </div>
+      </div>
+      <div class="scroll" id="actions-list"></div>
+    </div>
+
+    <!-- ---------- Audit ---------- -->
+    <div class="panel" id="panel-audit" role="tabpanel">
+      <div class="panel-head">
+        <h3>Append-only audit ledger</h3>
+        <div class="row-tight">
+          <select id="audit-run"></select>
+          <button class="btn btn-small" id="btn-load-audit" type="button">Load</button>
+          <button class="btn btn-small btn-ghost" id="btn-verify" type="button">Verify chain</button>
+        </div>
+      </div>
+      <div id="chain-status" class="chain-status"></div>
+      <div class="scroll" id="audit-list"></div>
+    </div>
+
+    <!-- ---------- Guardrails ---------- -->
+    <div class="panel" id="panel-guardrails" role="tabpanel">
+      <div class="panel-head">
+        <h3>Guardrail self-audit</h3>
+        <button class="btn btn-small" id="btn-guardrails" type="button">Re-check</button>
+      </div>
+      <div class="scroll" id="guardrails-body">
+        <p class="dim">Press “Re-check” to compute, for every task, whether the
+           scored guardrail is actually reachable &mdash; the failure this project
+           shipped with once already.</p>
+      </div>
+    </div>
+
+    <!-- ---------- Policy ---------- -->
+    <div class="panel" id="panel-policy" role="tabpanel">
+      <div class="panel-head">
+        <h3>Policy knowledge base</h3>
+        <div class="row-tight">
+          <input id="policy-q" type="search" placeholder="e.g. TANF 60 month time limit" />
+          <button class="btn btn-small" id="btn-policy" type="button">Search</button>
+        </div>
+      </div>
+      <div class="scroll" id="policy-body">
+        <p class="dim">Hybrid retrieval: BM25 + dense embeddings fused with
+           Reciprocal Rank Fusion. This is the same index the agent cites from.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= RIGHT: live trace ================= -->
+  <aside class="col col-right">
+    <section class="card grow">
+      <header class="card-head">
+        <h2>Agent trace</h2>
+        <label class="toggle toggle-small">
+          <input type="checkbox" id="trace-verbose" /><span>verbose</span>
+        </label>
+      </header>
+      <div class="card-body scroll" id="trace"></div>
+    </section>
+  </aside>
+
+</main>
+
+<!-- ---------- Edit dialog ---------- -->
+<div class="modal hidden" id="edit-modal">
+  <div class="modal-card">
+    <header class="modal-head">
+      <h3>Edit before approving</h3>
+      <button class="icon-btn" id="edit-close" type="button" aria-label="Close">&times;</button>
+    </header>
+    <div class="modal-body">
+      <p class="dim">
+        Editing changes what actually executes. Both the original proposal and
+        your edit are recorded in the ledger. The action <em>type</em> is not
+        editable &mdash; changing it would re-open the guardrail decision that
+        sent this to you.
+      </p>
+      <label class="field block">
+        <span class="field-label">Payload (JSON)</span>
+        <textarea id="edit-payload" spellcheck="false" rows="14"></textarea>
+      </label>
+      <p class="error hidden" id="edit-error"></p>
+      <label class="field block">
+        <span class="field-label">Why are you changing it? (recorded)</span>
+        <input id="edit-reason" type="text" placeholder="Required" />
+      </label>
+    </div>
+    <footer class="modal-foot">
+      <button class="btn btn-ghost" id="edit-cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="edit-submit" type="button">Approve edited action</button>
+    </footer>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

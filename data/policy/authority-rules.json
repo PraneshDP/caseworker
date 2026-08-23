@@ -1,0 +1,435 @@
+{
+  "$comment": [
+    "MACHINE-READABLE PROJECTION OF POLICY ACA-2026/1.",
+    "",
+    "This file is the authority boundary. The program reads it; the program does",
+    "not contain it. Changing what the assistant may do is an edit to this file",
+    "plus the prose it quotes -- it is not a code change.",
+    "",
+    "Every rule carries a `quote` lifted verbatim from `source_document`.",
+    "src/policy/authority.py refuses to load this file if any quote is not found",
+    "in the prose, so the two cannot drift apart silently. If someone edits the",
+    "policy text and forgets this file, the run fails loudly at startup instead",
+    "of enforcing a boundary that no longer exists.",
+    "",
+    "MATCH SEMANTICS (see src/policy/authority.py:match_rule)",
+    "  any   -- at least one phrase must appear in the normalised text",
+    "  all   -- every phrase must appear",
+    "  none  -- no phrase may appear (a veto, evaluated last)",
+    "Text is normalised to lowercase, punctuation-stripped, whitespace-collapsed",
+    "before matching, so 'Review award' and 'review of the award.' behave alike."
+  ],
+
+  "policy_ref": "ACA-2026/1",
+  "policy_title": "Automated Casework Assistant: Authority Policy",
+  "issuing_body": "Calder County - Department of Household Services",
+  "in_force_from": "2026-03-01",
+  "source_document": "data/policy/authority-policy.md",
+  "rules_version": "1.0.0",
+
+  "resolution_order": ["permitted", "restricted", "default"],
+
+  "$comment_resolution_order": [
+    "Section 2 is a CLOSED list of acts the assistant may perform on its own.",
+    "It is checked first, because an act named in section 2 is permitted even",
+    "when the case it touches is one on which a section 3 action is also owed.",
+    "Section 3 is checked next. Anything matching neither list falls to the",
+    "default rule, which is section 6.1: unclear means treat it as section 3.",
+    "That makes the boundary DEFAULT-DENY -- silence in the policy is a refusal,",
+    "not a permission."
+  ],
+
+  "default_rule": {
+    "id": "6.1",
+    "provision": "6.1",
+    "section": "6",
+    "effect": "requires_approval",
+    "quote": "Where it is unclear whether an action falls within section 3, it is to be treated as though it does.",
+    "attributed_provision": "3",
+    "rationale": "The requested action is not among the acts section 2 permits, and no specific section 3 provision names it. Section 6.1 resolves the ambiguity against the assistant.",
+    "supervisor_action": "Decide whether this request falls within section 3. If it does, authorise or refuse it. If it does not, it can be returned to the assistant queue."
+  },
+
+  "interpretation": [
+    {
+      "id": "6.1",
+      "provision": "6.1",
+      "quote": "Where it is unclear whether an action falls within section 3, it is to be treated as though it does.",
+      "effect_on_engine": "Ambiguity resolves to requires_approval. Recorded on every decision as interpretation_applied so a supervisor can see where the assistant was unsure rather than certain."
+    },
+    {
+      "id": "6.2",
+      "provision": "6.2",
+      "quote": "The fact that an action would be convenient, or that a caseworker would probably have approved it, is not relevant to whether approval is required.",
+      "effect_on_engine": "There is no confidence, urgency, convenience or likely-approval input to the authority decision. Urgency from the referring party affects ordering only, never authority."
+    }
+  ],
+
+  "escalation": [
+    {
+      "id": "4.1",
+      "provision": "4.1",
+      "quote": "Where a referral requests an action falling within section 3, the assistant must not perform the action, must not perform a partial or preparatory version of it, and must escalate.",
+      "effect_on_engine": "No effect function is bound for any action kind whose authority is requires_approval, so there is no code path that performs one. `no_preparatory_version` on each restricted rule names the drafting/preparation that is also withheld."
+    },
+    {
+      "id": "4.2",
+      "provision": "4.2",
+      "quote": "An escalation must identify the referral, state which provision of section 3 applies, and carry sufficient context for a supervisor to act without re-reading the case from the beginning.",
+      "effect_on_engine": "src/escalation.py refuses to emit a packet missing referral identity, provision, or resident context."
+    },
+    {
+      "id": "4.3",
+      "provision": "4.3",
+      "quote": "Escalation of one referral must not prevent the assistant from continuing to process the others.",
+      "effect_on_engine": "Each referral is processed inside its own failure boundary in src/orchestrator.py. An escalation is an outcome, never an abort."
+    }
+  ],
+
+  "traceability": [
+    {
+      "id": "5.1",
+      "provision": "5.1",
+      "quote": "Every action taken by an assistant must be recorded in a form that allows a supervisor to reconstruct, after the fact, what was done, in what order, on what information, and what was declined.",
+      "effect_on_engine": "Hash-chained append-only JSONL ledger in data/runs/. Every step records inputs, the authority decision, the effect, and declined actions with reasons."
+    },
+    {
+      "id": "5.2",
+      "provision": "5.2",
+      "quote": "A record which shows only the assistant's output, and not the steps that produced it, does not satisfy 5.1.",
+      "effect_on_engine": "The ledger records plan, authority decision, risk classification, gate outcome and effect as separate entries per step -- not just the triage note that came out of the end."
+    }
+  ],
+
+  "permitted": [
+    {
+      "id": "2.1",
+      "provision": "2.1",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "read_referral",
+      "label": "Read a referral from the overnight queue",
+      "quote": "Read a referral from the overnight queue.",
+      "match": {
+        "any": ["read referral", "read a referral", "read the referral", "read from queue"]
+      },
+      "performable": true
+    },
+    {
+      "id": "2.2",
+      "provision": "2.2",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "retrieve_resident_history",
+      "label": "Retrieve resident history, household composition and case events",
+      "quote": "Retrieve a resident's history, household composition, and case events.",
+      "match": {
+        "any": [
+          "retrieve history", "retrieve resident history", "pull history",
+          "resident history", "case events", "retrieve household composition"
+        ],
+        "none": ["review household composition", "change household", "amend household"]
+      },
+      "performable": true,
+      "notes": "RETRIEVING household composition is permitted. REVIEWING it in the sense a referral means -- reassessing the award in light of it -- is not; that is caught by 3.1. The `none` veto keeps the two apart."
+    },
+    {
+      "id": "2.3",
+      "provision": "2.3",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "categorise_referral",
+      "label": "Categorise or prioritise a referral",
+      "quote": "Categorise or prioritise a referral.",
+      "match": {
+        "any": ["categorise", "categorize", "prioritise", "prioritize", "triage category", "classify referral"]
+      },
+      "performable": true
+    },
+    {
+      "id": "2.4",
+      "provision": "2.4",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "draft_triage_note",
+      "label": "Draft a triage note for caseworker review",
+      "quote": "Draft a triage note for caseworker review. A drafted note is a proposal. It has no effect on the case until a caseworker adopts it.",
+      "match": {
+        "any": ["draft triage note", "draft a triage note", "triage note", "note for caseworker review", "note for supervisor"],
+        "none": [
+          "explanatory note", "note to the resident", "note to resident",
+          "letter", "notice", "send"
+        ]
+      },
+      "performable": true,
+      "notes": "The permission is specifically for a note addressed to a CASEWORKER or SUPERVISOR, which has no effect until adopted. A note addressed to the RESIDENT is a communication and is caught by 3.5; the `none` veto stops 2.4 absorbing it."
+    },
+    {
+      "id": "2.5",
+      "provision": "2.5",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "record_referral_triaged",
+      "label": "Record that a referral has been read and triaged",
+      "quote": "Record that a referral has been read and triaged.",
+      "match": {
+        "any": [
+          "record that a referral has been read", "record referral as read",
+          "record read and triaged", "mark referral triaged", "record triage",
+          "record that this referral has been read"
+        ]
+      },
+      "performable": true,
+      "notes": "Deliberately narrow. 2.5 permits recording the ASSISTANT'S OWN handling of the referral. It is not a general permission to write to the resident's record -- 'record change of address' and 'record income change' do not match here and fall to section 3."
+    },
+    {
+      "id": "2.6",
+      "provision": "2.6",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "flag_for_human_attention",
+      "label": "Flag a referral for human attention, including as urgent",
+      "quote": "Flag a referral for human attention, including flagging it as urgent.",
+      "match": {
+        "any": ["flag for", "flag as urgent", "flag referral", "flag this referral", "flag for human attention", "raise for attention"],
+        "none": ["contact the resident", "notify the resident", "write to the resident", "send"]
+      },
+      "performable": true,
+      "notes": "'Flag for contact attempt' is permitted: raising the flag is the act, and a human makes the contact. The assistant making the contact itself would be 3.5, which the `none` veto keeps out."
+    },
+    {
+      "id": "2.7",
+      "provision": "2.7",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "escalate_to_supervisor",
+      "label": "Identify an action it may not take and escalate under section 4",
+      "quote": "Identify that a referral requires an action the assistant is not permitted to take, and escalate it under section 4.",
+      "match": {
+        "any": ["escalate", "refer to supervisor", "escalation"]
+      },
+      "performable": true,
+      "notes": "This is the permission that makes refusal itself a legitimate, recordable action rather than a failure."
+    },
+    {
+      "id": "3.2_handoff",
+      "provision": "3.2",
+      "section": "2",
+      "effect": "permitted",
+      "action_kind": "handoff_to_caseworker",
+      "label": "Hand the referral to a caseworker with established context (safeguarding hand-off)",
+      "quote": "Where 3.9 applies, the assistant must hand the referral to a caseworker together with whatever it has already established under section 3.2 of Amendment ACA-2026/2.",
+      "match": {
+        "any": ["hand off to caseworker", "handoff to caseworker", "hand referral to a caseworker"]
+      },
+      "performable": true,
+      "notes": "Amendment ACA-2026/2 s.3.2 requires handing the referral to a caseworker together with whatever it has already established. This is an ordinary casework hand-off, not a supervisor escalation under section 4."
+    }
+  ],
+
+  "restricted": [
+    {
+      "id": "3.2",
+      "provision": "3.2",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "suspend_or_terminate_award",
+      "label": "Suspension, termination or reinstatement of an award",
+      "quote": "Suspension, termination, or reinstatement of an award.",
+      "match": {
+        "any": [
+          "suspend", "suspension", "suspend assistance", "terminate", "termination",
+          "reinstate", "reinstatement", "stop the award", "withdraw the award"
+        ]
+      },
+      "subject_matter": {
+        "any": ["reinstated", "reinstatement", "terminated", "termination", "suspended", "pending investigation"]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not draft the suspension, stage it, set a review date for it, or write anything to the case that presupposes it. Under 4.1 a prepared suspension is still a suspension.",
+      "supervisor_action": "Decide whether the award is to be suspended, terminated or reinstated, and record that decision before anything is applied to the case.",
+      "why_irreversible": "A suspension stops money reaching a household on the day it takes effect. The Department can restore the award but cannot undo the interruption."
+    },
+    {
+      "id": "3.4",
+      "provision": "3.4",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "change_payment_details",
+      "label": "Any change to payment details, including bank or card details",
+      "quote": "Any change to payment details, including bank or card details.",
+      "match": {
+        "any": [
+          "payment details", "update payment details", "change payment details",
+          "bank details", "card details", "bank account", "change the account",
+          "account into which payment", "new account", "change account into which payment is made"
+        ]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not record the proposed account, pre-fill a payment mandate, or note the new details anywhere they could be picked up and applied.",
+      "supervisor_action": "Verify the account holder against the resident's identity, then authorise or refuse the change of payment destination.",
+      "why_irreversible": "Money sent to the wrong account has left the Department. Redirecting a payment is the single highest-value target for account-takeover fraud in this queue."
+    },
+    {
+      "id": "3.3",
+      "provision": "3.3",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "alter_payment",
+      "label": "Initiation, alteration or cancellation of a payment",
+      "quote": "Initiation, alteration, or cancellation of a payment.",
+      "match": {
+        "any": [
+          "initiate a payment", "initiate payment", "cancel payment", "cancel the payment",
+          "alter payment", "amend payment", "stop payment", "issue payment",
+          "make a payment", "release payment", "backdate payment"
+        ]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not queue, schedule or pre-authorise a payment instruction.",
+      "supervisor_action": "Authorise or refuse the payment instruction, having confirmed entitlement and amount.",
+      "why_irreversible": "A released payment cannot be recalled by the Department acting alone."
+    },
+    {
+      "id": "3.7",
+      "provision": "3.7",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "record_finding_of_fact",
+      "label": "Creating a record asserting a finding of fact about a resident's conduct",
+      "quote": "Creation of a record that asserts a finding of fact about a resident's conduct, including any record relating to suspected fraud or misrepresentation.",
+      "match": {
+        "any": [
+          "finding of fact", "record fraud", "fraud finding", "confirm fraud",
+          "misrepresentation", "record allegation", "record the allegation",
+          "undeclared employment", "record conduct", "substantiate"
+        ]
+      },
+      "subject_matter": {
+        "any": ["fraud", "undeclared", "misrepresentation", "alleging", "allegation", "anonymous report", "counter-fraud"]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not restate the allegation in the case record as though it were established. An unqualified note saying 'undeclared employment' IS a finding of fact. Repeat it only as a quoted, attributed, unverified allegation inside the escalation.",
+      "supervisor_action": "Decide whether the allegation is to be recorded as a finding, referred for investigation, or dismissed. Only a person may make that finding.",
+      "why_irreversible": "A fraud marker on a resident's record follows them through every future assessment and is not undone by deleting the note."
+    },
+    {
+      "id": "3.1",
+      "provision": "3.1",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "change_entitlement",
+      "label": "Any change to entitlement, award amount or eligibility status",
+      "quote": "Any change to a resident's entitlement, award amount, or eligibility status.",
+      "match": {
+        "any": [
+          "review award", "review of award", "review the award", "review of the award",
+          "award review", "reassess award", "recalculate award", "adjust award",
+          "change entitlement", "change of entitlement", "entitlement", "eligibility status",
+          "record income change", "income change", "record change of income",
+          "review household composition", "household composition",
+          "record change of address", "change of address", "record new address",
+          "reassess", "uprate", "means test"
+        ]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not compute a revised award, write a provisional figure to the case, or amend any field the award calculation reads -- address, income, household members. Under 4.1 a staged recalculation is a change to entitlement.",
+      "supervisor_action": "Carry out or authorise the reassessment and record the resulting entitlement decision.",
+      "why_irreversible": "An entitlement figure, once written, is the basis of the next payment. A wrong one either underpays a household that needs the money or creates an overpayment the Department will later recover from them.",
+      "notes": [
+        "This is the broadest rule in the file and deliberately so.",
+        "A referral asking the Department to 'review' an award is not literally asking for a change -- a review can conclude that nothing changes. But the assistant cannot carry out a review without reassessing entitlement, and section 2 grants no power to reassess anything. That makes it unclear at best, and 6.1 resolves unclear against the assistant.",
+        "The same reasoning covers 'record change of address', 'record income change' and 'review household composition'. Each looks administrative. Each writes to a field the award calculation depends on. The data pack's warning that 'a routine-looking request can engage section 3 just as squarely as a dramatic one' is aimed exactly here."
+      ],
+      "interpretation_applied": "6.1"
+    },
+    {
+      "id": "3.5",
+      "provision": "3.5",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "send_communication",
+      "label": "Any communication sent to a resident or third party",
+      "quote": "Any communication sent to a resident or to a third party.",
+      "match": {
+        "any": [
+          "explanatory note", "draft explanatory note", "note to the resident", "note to resident",
+          "send", "notify the resident", "write to the resident", "contact the resident",
+          "letter", "notice to resident", "email the resident", "telephone the resident",
+          "respond to the resident", "reply to the resident", "inform the resident"
+        ]
+      },
+      "subject_matter": {
+        "any": ["contact attempt", "returned undelivered", "correspondence returned"]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not draft resident-facing wording at all. A drafted letter is a preparatory version of sending one, and 4.1 withholds preparatory versions. The permitted alternative is a triage note addressed to the caseworker under 2.4, describing what needs saying without composing it.",
+      "supervisor_action": "Approve the content and the sending of any communication to the resident or third party.",
+      "why_irreversible": "A statement that has reached a resident cannot be unsaid, and an incorrect one about their money causes immediate harm to their planning.",
+      "interpretation_applied": "6.1",
+      "notes": [
+        "Section 3.5 restricts communication 'sent'. Drafting is not sending, so a literal reading might allow it.",
+        "Two things close that gap. Section 4.1 forbids a partial or preparatory version of a section 3 action. And 6.1 requires the unclear case to be treated as falling within section 3.",
+        "So the assistant does not compose resident-facing text. It says what needs to be communicated, in a note to a caseworker, and lets a person write it."
+      ]
+    },
+    {
+      "id": "3.6",
+      "provision": "3.6",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "disclose_information",
+      "label": "Disclosure of resident information outside the Department",
+      "quote": "Disclosure of resident information to any party outside the Department.",
+      "match": {
+        "any": [
+          "disclose", "disclosure", "share with", "release information",
+          "provide details to", "third party request", "subject access", "information request"
+        ]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not assemble or export the disclosure bundle.",
+      "supervisor_action": "Confirm the lawful basis for disclosure and approve or refuse the release.",
+      "why_irreversible": "Information that has left the Department cannot be retrieved."
+    },
+    {
+      "id": "3.8",
+      "provision": "3.8",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "irreversible_action",
+      "label": "Any action which cannot be reversed by the Department acting alone",
+      "quote": "Any action which, once taken, cannot be reversed by the Department acting alone.",
+      "match": {
+        "any": ["irreversible", "cannot be reversed", "permanently", "final decision", "close the case permanently", "destroy"]
+      },
+      "performable": false,
+      "no_preparatory_version": "Do not take any step that commits the Department to the outcome.",
+      "supervisor_action": "Decide whether the Department accepts an outcome it cannot itself undo.",
+      "why_irreversible": "By definition.",
+      "notes": "A catch-all. It is listed last so a more specific provision is cited where one applies, but it means no irreversible action can escape section 3 merely by being unnamed."
+    },
+    {
+      "id": "3.9",
+      "provision": "3.9",
+      "section": "3",
+      "effect": "requires_approval",
+      "action_kind": "draft_triage_note_child_in_household",
+      "label": "Drafting a triage note concerning a household that includes a person under 18",
+      "quote": "Drafting a triage note in respect of a referral concerning a household that includes a person under the age of 18.",
+      "match": {
+        "any": [
+          "draft triage note child",
+          "draft triage note for child in household",
+          "drafting a triage note in respect of a referral concerning a household that includes a person under the age of 18"
+        ]
+      },
+      "performable": false,
+      "no_preparatory_version": "An assistant may not produce a draft note for such a case at all (Amendment ACA-2026/2 s.2.2). Work already done is preserved and handed to a caseworker under s.3.2.",
+      "supervisor_action": "Safeguarding requirement: drafting triage notes concerning households with children under 18 requires caseworker judgement from the outset.",
+      "why_irreversible": "Safeguarding determination following review; not subject to local discretion.",
+      "notes": "Amendment ACA-2026/2 inserts section 3.9. Where household composition cannot be established, 3.9 is treated as applying in accordance with section 6.1."
+    }
+  ]
+}
+

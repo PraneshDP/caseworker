@@ -1,0 +1,42 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+
+# --- Virtualenvs ---
+.venv/
+venv/
+env/
+
+# --- Secrets ---
+# .env holds the Gemini API key. .env.example is committed; .env never is.
+.env
+
+# --- Generated run output ---
+# Everything below is produced by a run. It is reproducible from the committed
+# inputs (data/policy/ and data/referrals/), so committing it would mean the repo
+# carried stale copies of records that are supposed to be regenerated.
+data/runs/*.json
+data/runs/*.jsonl
+data/logs/*.jsonl
+data/logs/*.log
+data/artifacts/*/
+data/escalations/*/
+data/chromadb/
+
+# --- Editor / OS ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# --- Local Claude Code session state ---
+.claude/settings.local.json
+
+# --- local push helper (not part of the submitted repo) ---
+push.sh

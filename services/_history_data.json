@@ -1,0 +1,734 @@
+{
+ "R-20500": {
+  "resident_ref": "R-20500",
+  "status": "Active",
+  "benefit_code": "HSP-A",
+  "district": "Ash Hill",
+  "award_monthly": 988.04,
+  "household": [
+   {
+    "name": "Elizabeth Whitlock",
+    "date_of_birth": "1964-05-25",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "William Iverson",
+    "date_of_birth": "2021-02-26",
+    "relationship": "Son/daughter"
+   }
+  ],
+  "events": [
+   {
+    "date": "2025-03-18",
+    "type": "Address change recorded",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-05-04",
+    "type": "Contact logged",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2025-06-21",
+    "type": "Evidence received",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-08-21",
+    "type": "Note added",
+    "detail": "Referred to employment support."
+   }
+  ]
+ },
+ "R-20507": {
+  "resident_ref": "R-20507",
+  "status": "Active",
+  "benefit_code": "HSP-C",
+  "district": "Calder Central",
+  "award_monthly": 707.9,
+  "household": [
+   {
+    "name": "Susan Marsh",
+    "date_of_birth": "1971-03-15",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Sarah Hollis",
+    "date_of_birth": "2002-11-12",
+    "relationship": "Son/daughter"
+   },
+   {
+    "name": "Rosa Crowley",
+    "date_of_birth": "2000-01-10",
+    "relationship": "Other relative"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-07-29",
+    "type": "Evidence requested",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2024-09-11",
+    "type": "Evidence requested",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-10-27",
+    "type": "Interview scheduled",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-11-30",
+    "type": "Award recalculated",
+    "detail": "Attended district office in person."
+   },
+   {
+    "date": "2025-01-25",
+    "type": "Evidence requested",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-03-20",
+    "type": "Address change recorded",
+    "detail": "Attended district office in person."
+   },
+   {
+    "date": "2025-03-31",
+    "type": "Payment issued",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-05-19",
+    "type": "Payment issued",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-06-11",
+    "type": "Award recalculated",
+    "detail": "Left voicemail, no response."
+   }
+  ]
+ },
+ "R-20514": {
+  "resident_ref": "R-20514",
+  "status": "Active",
+  "benefit_code": "HSP-C",
+  "district": "Weybridge",
+  "award_monthly": 695.15,
+  "household": [
+   {
+    "name": "Tomas Okonkwo",
+    "date_of_birth": "1980-07-04",
+    "relationship": "Applicant"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-07-14",
+    "type": "Evidence received",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-09-08",
+    "type": "Interview scheduled",
+    "detail": "Routine contact, no action required."
+   },
+   {
+    "date": "2024-09-21",
+    "type": "Evidence requested",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-11-04",
+    "type": "Interview attended",
+    "detail": "Attended district office in person."
+   },
+   {
+    "date": "2024-11-24",
+    "type": "Interview attended",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2025-01-17",
+    "type": "Review completed",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-03-27",
+    "type": "Interview scheduled",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-04-03",
+    "type": "Evidence requested",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-05-22",
+    "type": "Evidence requested",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-07-21",
+    "type": "Payment issued",
+    "detail": "Left voicemail, no response."
+   }
+  ]
+ },
+ "R-20521": {
+  "resident_ref": "R-20521",
+  "status": "Active",
+  "benefit_code": "HSP-B",
+  "district": "Ash Hill",
+  "award_monthly": 808.52,
+  "household": [
+   {
+    "name": "Jessica Delgado",
+    "date_of_birth": "1993-07-02",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Maria Delgado",
+    "date_of_birth": "1991-02-17",
+    "relationship": "Parent"
+   },
+   {
+    "name": "Michael Jennings",
+    "date_of_birth": "1987-05-07",
+    "relationship": "Parent"
+   },
+   {
+    "name": "Maria Zamora",
+    "date_of_birth": "1961-12-23",
+    "relationship": "Parent"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-09-14",
+    "type": "Award recalculated",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-10-19",
+    "type": "Award recalculated",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2024-12-24",
+    "type": "Award recalculated",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-01-03",
+    "type": "Interview scheduled",
+    "detail": "Correspondence returned undelivered."
+   }
+  ]
+ },
+ "R-20528": {
+  "resident_ref": "R-20528",
+  "status": "Active",
+  "benefit_code": "HSP-A",
+  "district": "Ash Hill",
+  "award_monthly": 1094.8,
+  "household": [
+   {
+    "name": "Tomas Fowler",
+    "date_of_birth": "1984-10-01",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Maria Carver",
+    "date_of_birth": "2022-04-20",
+    "relationship": "Son/daughter"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-12-21",
+    "type": "Review completed",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-01-20",
+    "type": "Interview attended",
+    "detail": "Routine contact, no action required."
+   },
+   {
+    "date": "2025-01-25",
+    "type": "Interview scheduled",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-02-11",
+    "type": "Note added",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-03-26",
+    "type": "Evidence received",
+    "detail": "Routine contact, no action required."
+   },
+   {
+    "date": "2025-05-01",
+    "type": "Interview scheduled",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-05-26",
+    "type": "Evidence received",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-06-24",
+    "type": "Address change recorded",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2025-07-08",
+    "type": "Contact logged",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2025-08-30",
+    "type": "Address change recorded",
+    "detail": "Routine contact, no action required."
+   }
+  ]
+ },
+ "R-20535": {
+  "resident_ref": "R-20535",
+  "status": "Active",
+  "benefit_code": "HSP-B",
+  "district": "Weybridge",
+  "award_monthly": 695.49,
+  "household": [
+   {
+    "name": "Sarah Crowley",
+    "date_of_birth": "1972-11-10",
+    "relationship": "Applicant"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-06-06",
+    "type": "Evidence requested",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2024-06-29",
+    "type": "Contact logged",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2024-07-09",
+    "type": "Interview scheduled",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-09-12",
+    "type": "Payment issued",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2024-10-18",
+    "type": "Address change recorded",
+    "detail": "Attended district office in person."
+   }
+  ]
+ },
+ "R-20542": {
+  "resident_ref": "R-20542",
+  "status": "Active",
+  "benefit_code": "HSP-C",
+  "district": "Ash Hill",
+  "award_monthly": 1449.67,
+  "household": [
+   {
+    "name": "Sarah Delgado",
+    "date_of_birth": "1993-09-28",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Michael Crowley",
+    "date_of_birth": "2013-08-13",
+    "relationship": "Son/daughter"
+   },
+   {
+    "name": "Patricia Kessler",
+    "date_of_birth": "2002-09-29",
+    "relationship": "Spouse/partner"
+   },
+   {
+    "name": "Rosa Vance",
+    "date_of_birth": "2025-11-19",
+    "relationship": "Son/daughter"
+   }
+  ],
+  "events": [
+   {
+    "date": "2025-01-10",
+    "type": "Note added",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2025-01-24",
+    "type": "Evidence received",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-02-26",
+    "type": "Review completed",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-04-11",
+    "type": "Interview scheduled",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-04-30",
+    "type": "Evidence received",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-05-14",
+    "type": "Payment issued",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-06-04",
+    "type": "Interview scheduled",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-07-02",
+    "type": "Evidence requested",
+    "detail": "Attended district office in person."
+   }
+  ]
+ },
+ "R-20549": {
+  "resident_ref": "R-20549",
+  "status": "Active",
+  "benefit_code": "HSP-C",
+  "district": "Calder Central",
+  "award_monthly": 875.39,
+  "household": [
+   {
+    "name": "Ahmed Rasmussen",
+    "date_of_birth": "1999-07-02",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Karen Thorne",
+    "date_of_birth": "1957-05-03",
+    "relationship": "Parent"
+   },
+   {
+    "name": "Tomas Ellery",
+    "date_of_birth": "1964-04-30",
+    "relationship": "Other relative"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-08-23",
+    "type": "Evidence requested",
+    "detail": "Routine contact, no action required."
+   },
+   {
+    "date": "2024-10-31",
+    "type": "Payment issued",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-01-06",
+    "type": "Evidence requested",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-01-18",
+    "type": "Award recalculated",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-02-27",
+    "type": "Contact logged",
+    "detail": "Left voicemail, no response."
+   },
+   {
+    "date": "2025-03-07",
+    "type": "Contact logged",
+    "detail": "Routine contact, no action required."
+   }
+  ]
+ },
+ "R-20556": {
+  "resident_ref": "R-20556",
+  "status": "Suspended",
+  "benefit_code": "HSP-A",
+  "district": "Northgate",
+  "award_monthly": 1003.37,
+  "household": [
+   {
+    "name": "Daniel Crowley",
+    "date_of_birth": "1986-08-19",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Barbara Rasmussen",
+    "date_of_birth": "2003-02-02",
+    "relationship": "Spouse/partner"
+   },
+   {
+    "name": "Daniel Kessler",
+    "date_of_birth": "1985-07-09",
+    "relationship": "Spouse/partner"
+   },
+   {
+    "name": "Priya Crowley",
+    "date_of_birth": "1970-03-10",
+    "relationship": "Spouse/partner"
+   }
+  ],
+  "events": [
+   {
+    "date": "2025-01-18",
+    "type": "Award recalculated",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2025-02-17",
+    "type": "Award recalculated",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-02-25",
+    "type": "Interview attended",
+    "detail": "Routine contact, no action required."
+   },
+   {
+    "date": "2025-04-30",
+    "type": "Payment issued",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-05-21",
+    "type": "Evidence received",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-07-15",
+    "type": "Interview scheduled",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-08-18",
+    "type": "Evidence requested",
+    "detail": "Attended district office in person."
+   },
+   {
+    "date": "2025-08-24",
+    "type": "Award recalculated",
+    "detail": "Documents received and filed."
+   },
+   {
+    "date": "2025-09-08",
+    "type": "Review completed",
+    "detail": "Attended district office in person."
+   },
+   {
+    "date": "2025-10-24",
+    "type": "Payment issued",
+    "detail": "Correspondence returned undelivered."
+   }
+  ]
+ },
+ "R-20563": {
+  "resident_ref": "R-20563",
+  "status": "Active",
+  "benefit_code": "HSP-C",
+  "district": "Weybridge",
+  "award_monthly": 1321.76,
+  "household": [
+   {
+    "name": "Ahmed Carver",
+    "date_of_birth": "1966-11-28",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Susan Delgado",
+    "date_of_birth": "1970-03-18",
+    "relationship": "Other relative"
+   },
+   {
+    "name": "Robert Thorne",
+    "date_of_birth": "1950-01-07",
+    "relationship": "Other relative"
+   },
+   {
+    "name": "Daniel Bennett",
+    "date_of_birth": "1993-07-27",
+    "relationship": "Son/daughter"
+   }
+  ],
+  "events": [
+   {
+    "date": "2025-06-13",
+    "type": "Note added",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-08-08",
+    "type": "Award recalculated",
+    "detail": "Routine contact, no action required."
+   },
+   {
+    "date": "2025-10-07",
+    "type": "Note added",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2025-11-07",
+    "type": "Interview attended",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-12-22",
+    "type": "Review completed",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2026-01-14",
+    "type": "Address change recorded",
+    "detail": "Left voicemail, no response."
+   }
+  ]
+ },
+ "R-20570": {
+  "resident_ref": "R-20570",
+  "status": "Active",
+  "benefit_code": "HSP-A",
+  "district": "Weybridge",
+  "award_monthly": 1188.78,
+  "household": [
+   {
+    "name": "David Thorne",
+    "date_of_birth": "1977-03-12",
+    "relationship": "Applicant"
+   },
+   {
+    "name": "Ahmed Ashford",
+    "date_of_birth": "2003-02-24",
+    "relationship": "Son/daughter"
+   },
+   {
+    "name": "Robert Okonkwo",
+    "date_of_birth": "2002-09-18",
+    "relationship": "Parent"
+   },
+   {
+    "name": "Elizabeth Kessler",
+    "date_of_birth": "1992-10-11",
+    "relationship": "Son/daughter"
+   }
+  ],
+  "events": [
+   {
+    "date": "2024-09-17",
+    "type": "Interview scheduled",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-11-15",
+    "type": "Award recalculated",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2024-11-21",
+    "type": "Evidence requested",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-01-30",
+    "type": "Evidence received",
+    "detail": "Attended district office in person."
+   },
+   {
+    "date": "2025-03-20",
+    "type": "Address change recorded",
+    "detail": "Left voicemail, no response."
+   }
+  ]
+ },
+ "R-20577": {
+  "resident_ref": "R-20577",
+  "status": "Active",
+  "benefit_code": "HSP-B",
+  "district": "Weybridge",
+  "award_monthly": 463.03,
+  "household": [
+   {
+    "name": "Sarah Thorne",
+    "date_of_birth": "1993-08-28",
+    "relationship": "Applicant"
+   }
+  ],
+  "events": [
+   {
+    "date": "2025-06-05",
+    "type": "Review completed",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-07-17",
+    "type": "Contact logged",
+    "detail": "Award unchanged following review."
+   },
+   {
+    "date": "2025-08-09",
+    "type": "Interview attended",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2025-09-02",
+    "type": "Address change recorded",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2025-09-10",
+    "type": "Review completed",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2025-10-18",
+    "type": "Interview attended",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-12-18",
+    "type": "Contact logged",
+    "detail": "Correspondence returned undelivered."
+   },
+   {
+    "date": "2025-12-27",
+    "type": "Note added",
+    "detail": "Recalculation applied from start of month."
+   },
+   {
+    "date": "2026-02-02",
+    "type": "Interview scheduled",
+    "detail": "Referred to employment support."
+   },
+   {
+    "date": "2026-02-20",
+    "type": "Evidence received",
+    "detail": "Left voicemail, no response."
+   }
+  ]
+ }
+}

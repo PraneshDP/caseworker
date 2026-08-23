@@ -1,0 +1,81 @@
+{
+  "hand_off_type": "safeguarding_caseworker_handoff",
+  "policy_rule": "ACA-2026/2 s.3.9",
+  "is_supervisor_escalation": false,
+  "referral": {
+    "referral_id": "RF-2026-0416",
+    "resident_ref": "R-20528",
+    "received_at": "2026-03-17T01:56:00",
+    "source": "District Office (Weybridge)",
+    "urgency": "Standard",
+    "requested_action": "Review household composition",
+    "summary": "Resident attended counter; reports partner has left the household."
+  },
+  "safeguarding": {
+    "reason": "Household includes 1 person(s) under 18: Maria Carver (Son/daughter, b. 2022-04-20, age 3). Safeguarding rule ACA-2026/2 s.3.9 prohibits automated drafting of triage notes; referral must be handed to a caseworker under s.3.2.",
+    "children_identified": [
+      {
+        "name": "Maria Carver",
+        "date_of_birth": "2022-04-20",
+        "relationship": "Son/daughter",
+        "age": 3
+      }
+    ]
+  },
+  "preserved_work": {
+    "assessment": {
+      "category": "Household change",
+      "routing": "Assessment team",
+      "priority": "Routine",
+      "priority_rationale": "Referring party stated urgency Standard; no circumstance in the referral raises it further.",
+      "matched_on": "household",
+      "referrer_urgency": "Standard"
+    },
+    "resident_context": "Resident R-20528 — status Active, benefit HSP-A, district Ash Hill.\nCurrent award: 1,094.80 per month.\nHousehold (2):\n  - Tomas Fowler — Applicant — b. 1984-10-01, age 41\n  - Maria Carver — Son/daughter — b. 2022-04-20, age 3\nMost recent case events (4 of 10):\n  - 2025-08-30  Address change recorded — Routine contact, no action required.\n  - 2025-07-08  Contact logged — Recalculation applied from start of month.\n  - 2025-06-24  Address change recorded — Documents received and filed.\n  - 2025-05-26  Evidence received — Left voicemail, no response.",
+    "household_members": [
+      {
+        "name": "Tomas Fowler",
+        "date_of_birth": "1984-10-01",
+        "relationship": "Applicant"
+      },
+      {
+        "name": "Maria Carver",
+        "date_of_birth": "2022-04-20",
+        "relationship": "Son/daughter"
+      }
+    ],
+    "actions_taken": [
+      {
+        "order": 1,
+        "action": "Read RF-2026-0416 (District Office (Weybridge)) for resident R-20528.",
+        "provision": "3.1",
+        "inputs": "The overnight queue entry for RF-2026-0416.",
+        "result": "{\"referral_id\": \"RF-2026-0416\", \"resident_ref\": \"R-20528\", \"fields_read\": [\"referral_id\", \"received_at\", \"resident_ref\", \"source\", \"summary\", \"requested_action\", \"urgency\"], \"requested_action\": \"Review household composition\", \"referrer_urgency\": \"Standard\", \"redacted_fields\": [], \"read_at\": \"2026-08-23T13:17:47\"}",
+        "at": "2026-08-23T13:17:47.238098"
+      },
+      {
+        "order": 2,
+        "action": "Retrieve history, household composition and case events for R-20528.",
+        "provision": "3.1",
+        "inputs": "Resident R-20528 from api",
+        "result": "{\"resident_ref\": \"R-20528\", \"available\": true, \"status\": \"Active\", \"benefit_code\": \"HSP-A\", \"district\": \"Ash Hill\", \"award_monthly\": 1094.8, \"household_size\": 2, \"household\": [{\"name\": \"Tomas Fowler\", \"date_of_birth\": \"1984-10-01\", \"relationship\": \"Applicant\"}, {\"name\": \"Maria Carver\", \"date_of_birth\": \"2022-04-20\", \"relationship\": \"Son/daughter\"}], \"events\": [{\"date\": \"2024-12-21\", \"type\": \"Review completed\", \"detail\": \"Referred to employment support.\"}, {\"date\": \"2025-01-20\", \"type\": \"Interview attended\", \"detail\": \"Routine contact, no action required.\"}, {\"date\": \"2025-01-25\", \"type\": \"Interview scheduled\", \"detail\": \"Referred to employment support.\"}, {\"date\": \"2025-02-11\", \"type\": \"Note added\", \"detail\": \"Referred to employment support.\"}, {\"date\": \"2025-03-26\", \"type\": \"Evidence received\", \"detail\": \"Routine contact, no action required.\"}, {\"date\": \"2025-05-01\", \"type\": \"Interview scheduled\", \"detail\": \"Correspondence returned undelivered.\"}, {\"date\": \"2025-05-26\", \"type\": \"Evidence received\", \"detail\": \"Left voicemail, no response.\"}, {\"date\": \"2025-06-24\", \"type\": \"Address change recorded\", \"detail\": \"Documents received and filed.\"}, {\"date\": \"2025-07-08\", \"type\": \"Contact logged\", \"detail\": \"Recalculation applied from start of month.\"}, {\"date\": \"2025-08-30\", \"type\": \"Address change recorded\", \"detail\": \"Routine contact, no action required.\"}], \"error\": \"\", \"source\": \"api\", \"retrieved_at\": \"2026-08-23T12:26:44.718720\", \"latency_ms\": 217.5}",
+        "at": "2026-08-23T13:17:47.238553"
+      },
+      {
+        "order": 3,
+        "action": "Categorise as Household change, route to Assessment team, priority Routine.",
+        "provision": "3.1",
+        "inputs": "The referral text and the resident's record from api.",
+        "result": "{\"category\": \"Household change\", \"routing\": \"Assessment team\", \"priority\": \"Routine\", \"priority_rationale\": \"Referring party stated urgency Standard; no circumstance in the referral raises it further.\", \"matched_on\": \"household\", \"referrer_urgency\": \"Standard\"}",
+        "at": "2026-08-23T13:17:47.239080"
+      }
+    ],
+    "data_quality_notes": []
+  },
+  "caseworker_action": "Caseworker to review referral and resident history, assess safeguarding implications, and draft the triage note exercising human judgment.",
+  "provenance": {
+    "run_id": "2da25ced",
+    "actor": "human:j.alvarez",
+    "created_at": "2026-08-23T13:17:47"
+  }
+}

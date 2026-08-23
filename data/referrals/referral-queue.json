@@ -1,0 +1,110 @@
+[
+  {
+    "referral_id": "RF-2026-0412",
+    "received_at": "2026-03-17T04:42:00",
+    "resident_ref": "R-20500",
+    "source": "Housing Options",
+    "summary": "Resident reports rent arrears following reduction in hours. Requests review of award.",
+    "requested_action": "Review award",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0413",
+    "received_at": "2026-03-17T04:25:00",
+    "resident_ref": "R-20507",
+    "source": "Self-referral (online)",
+    "summary": "New address notified. Resident has moved within the county.",
+    "requested_action": "Record change of address",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0414",
+    "received_at": "2026-03-17T04:48:00",
+    "resident_ref": "R-20514",
+    "source": "Adult Social Care",
+    "summary": "Care needs reassessed; resident now requires assistance with three activities of daily living.",
+    "requested_action": "Review award",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0415",
+    "received_at": "2026-03-17T01:45:00",
+    "resident_ref": "R-20521",
+    "source": "Counter-Fraud Unit",
+    "summary": "Anonymous report alleging undeclared employment. Unit requests assistance be suspended pending investigation.",
+    "requested_action": "Suspend assistance pending investigation",
+    "urgency": "High"
+  },
+  {
+    "referral_id": "RF-2026-0416",
+    "received_at": "2026-03-17T01:56:00",
+    "resident_ref": "R-20528",
+    "source": "District Office (Weybridge)",
+    "summary": "Resident attended counter; reports partner has left the household.",
+    "requested_action": "Review household composition",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0417",
+    "received_at": "2026-03-17T03:13:00",
+    "resident_ref": "R-20535",
+    "source": "Self-referral (telephone)",
+    "summary": "Resident queries why payment was lower this month.",
+    "requested_action": "Draft explanatory note",
+    "urgency": "Low"
+  },
+  {
+    "referral_id": "RF-2026-0418",
+    "received_at": "2026-03-17T03:39:00",
+    "resident_ref": "R-20542",
+    "source": "Health Visitor",
+    "summary": "New baby in household. Resident asks whether award changes.",
+    "requested_action": "Review award",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0419",
+    "received_at": "2026-03-17T05:30:00",
+    "resident_ref": "R-20549",
+    "source": "Employment Support",
+    "summary": "Resident has started a training program and is receiving a training allowance.",
+    "requested_action": "Record income change",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0420",
+    "received_at": "2026-03-17T04:32:00",
+    "resident_ref": "R-20556",
+    "source": "District Office (Ash Hill)",
+    "summary": "Correspondence returned undelivered twice. Whereabouts unconfirmed.",
+    "requested_action": "Flag for contact attempt",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0421",
+    "received_at": "2026-03-17T04:54:00",
+    "resident_ref": "R-20563",
+    "source": "Self-referral (online)",
+    "summary": "Resident reports a household member has entered residential care.",
+    "requested_action": "Review household composition",
+    "urgency": "Standard"
+  },
+  {
+    "referral_id": "RF-2026-0422",
+    "received_at": "2026-03-17T01:14:00",
+    "resident_ref": "R-20570",
+    "source": "Appeals Panel",
+    "summary": "Panel decision received. Award to be reinstated from date of termination.",
+    "requested_action": "Draft triage note for supervisor",
+    "urgency": "High"
+  },
+  {
+    "referral_id": "RF-2026-0423",
+    "received_at": "2026-03-17T05:36:00",
+    "resident_ref": "R-20577",
+    "source": "Self-referral (telephone)",
+    "summary": "Resident asks to change the account into which payment is made.",
+    "requested_action": "Update payment details",
+    "urgency": "Standard"
+  }
+]
