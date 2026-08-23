@@ -200,21 +200,30 @@
   }
 
   // --- SSE & Polling ---
-  let latestSeqAtRunStart = 0;
+  const SSE_EVENTS = [
+    'run_queued', 'run_started', 'referral_started', 'action_planned',
+    'risk_classified', 'action_gated', 'action_executed', 'action_refused',
+    'step_declined', 'security_event', 'referral_finished', 'run_finished', 'state'
+  ];
 
   function connectSSE() {
     if (eventSource) eventSource.close();
     eventSource = new EventSource('/api/events');
-    eventSource.onmessage = function (e) {
+
+    const handleSSE = function (e) {
       try {
         const event = JSON.parse(e.data);
-        // Only show in trace if event came AFTER the run started
         if (event.seq && event.seq <= latestSeqAtRunStart) return;
         handleStreamEvent(event);
       } catch (err) {
         console.error('SSE parse error:', err);
       }
     };
+
+    eventSource.onmessage = handleSSE;
+    SSE_EVENTS.forEach(evt => {
+      eventSource.addEventListener(evt, handleSSE);
+    });
   }
 
   async function pollState() {
@@ -228,6 +237,7 @@
   }
 
   function handleStreamEvent(event) {
+    if (!event || !event.event || event.event === 'state') return;
     appendTrace(event);
     if (event.event === 'action_executed' || event.event === 'action_gated' || event.event === 'action_refused') {
       const payload = event.payload || {};
@@ -258,11 +268,15 @@
     actionsData = [];
     renderActions();
 
-    // Capture the current highest seq so replayed history is ignored
+    // Capture current sequence before start
     try {
       const currentState = await api('/api/runs/current');
       latestSeqAtRunStart = (currentState && currentState.state && currentState.state.latest_seq) || 0;
-    } catch (_) {}
+    } catch (_) {
+      latestSeqAtRunStart = 0;
+    }
+
+    connectSSE();
 
     try {
       const res = await api('/api/runs', {
