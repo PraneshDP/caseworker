@@ -200,12 +200,16 @@
   }
 
   // --- SSE & Polling ---
+  let latestSeqAtRunStart = 0;
+
   function connectSSE() {
     if (eventSource) eventSource.close();
     eventSource = new EventSource('/api/events');
     eventSource.onmessage = function (e) {
       try {
         const event = JSON.parse(e.data);
+        // Only show in trace if event came AFTER the run started
+        if (event.seq && event.seq <= latestSeqAtRunStart) return;
         handleStreamEvent(event);
       } catch (err) {
         console.error('SSE parse error:', err);
@@ -247,9 +251,18 @@
 
     el.btnStart.disabled = true;
     el.btnCancel.disabled = false;
+
+    // Reset trace for fresh run
+    traceEventsList = [];
     el.trace.innerHTML = '';
     actionsData = [];
     renderActions();
+
+    // Capture the current highest seq so replayed history is ignored
+    try {
+      const currentState = await api('/api/runs/current');
+      latestSeqAtRunStart = (currentState && currentState.state && currentState.state.latest_seq) || 0;
+    } catch (_) {}
 
     try {
       const res = await api('/api/runs', {

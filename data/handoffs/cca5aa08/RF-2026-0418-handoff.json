@@ -1,0 +1,97 @@
+{
+  "hand_off_type": "safeguarding_caseworker_handoff",
+  "policy_rule": "ACA-2026/2 s.3.9",
+  "is_supervisor_escalation": false,
+  "referral": {
+    "referral_id": "RF-2026-0418",
+    "resident_ref": "R-20542",
+    "received_at": "2026-03-17T03:39:00",
+    "source": "Health Visitor",
+    "urgency": "Standard",
+    "requested_action": "Review award",
+    "summary": "New baby in household. Resident asks whether award changes."
+  },
+  "safeguarding": {
+    "reason": "Household includes 2 person(s) under 18: Michael Crowley (Son/daughter, b. 2013-08-13, age 12); Rosa Vance (Son/daughter, b. 2025-11-19, age 0). Safeguarding rule ACA-2026/2 s.3.9 prohibits automated drafting of triage notes; referral must be handed to a caseworker under s.3.2.",
+    "children_identified": [
+      {
+        "name": "Michael Crowley",
+        "date_of_birth": "2013-08-13",
+        "relationship": "Son/daughter",
+        "age": 12
+      },
+      {
+        "name": "Rosa Vance",
+        "date_of_birth": "2025-11-19",
+        "relationship": "Son/daughter",
+        "age": 0
+      }
+    ]
+  },
+  "preserved_work": {
+    "assessment": {
+      "category": "Household change",
+      "routing": "Assessment team",
+      "priority": "Same day",
+      "priority_rationale": "A change in care or household circumstances is recorded; assistance may be understated while it waits.",
+      "matched_on": "household",
+      "referrer_urgency": "Standard"
+    },
+    "resident_context": "Resident R-20542 — status Active, benefit HSP-C, district Ash Hill.\nCurrent award: 1,449.67 per month.\nHousehold (4):\n  - Sarah Delgado — Applicant — b. 1993-09-28, age 32\n  - Michael Crowley — Son/daughter — b. 2013-08-13, age 12\n  - Patricia Kessler — Spouse/partner — b. 2002-09-29, age 23\n  - Rosa Vance — Son/daughter — b. 2025-11-19, age 0\nMost recent case events (4 of 8):\n  - 2025-07-02  Evidence requested — Attended district office in person.\n  - 2025-06-04  Interview scheduled — Left voicemail, no response.\n  - 2025-05-14  Payment issued — Correspondence returned undelivered.\n  - 2025-04-30  Evidence received — Correspondence returned undelivered.",
+    "household_members": [
+      {
+        "name": "Sarah Delgado",
+        "date_of_birth": "1993-09-28",
+        "relationship": "Applicant"
+      },
+      {
+        "name": "Michael Crowley",
+        "date_of_birth": "2013-08-13",
+        "relationship": "Son/daughter"
+      },
+      {
+        "name": "Patricia Kessler",
+        "date_of_birth": "2002-09-29",
+        "relationship": "Spouse/partner"
+      },
+      {
+        "name": "Rosa Vance",
+        "date_of_birth": "2025-11-19",
+        "relationship": "Son/daughter"
+      }
+    ],
+    "actions_taken": [
+      {
+        "order": 1,
+        "action": "Read RF-2026-0418 (Health Visitor) for resident R-20542.",
+        "provision": "3.1",
+        "inputs": "The overnight queue entry for RF-2026-0418.",
+        "result": "{\"referral_id\": \"RF-2026-0418\", \"resident_ref\": \"R-20542\", \"fields_read\": [\"referral_id\", \"received_at\", \"resident_ref\", \"source\", \"summary\", \"requested_action\", \"urgency\"], \"requested_action\": \"Review award\", \"referrer_urgency\": \"Standard\", \"redacted_fields\": [], \"read_at\": \"2026-08-23T14:36:37\"}",
+        "at": "2026-08-23T14:36:37.264444"
+      },
+      {
+        "order": 2,
+        "action": "Retrieve history, household composition and case events for R-20542.",
+        "provision": "3.1",
+        "inputs": "Resident R-20542 from api",
+        "result": "{\"resident_ref\": \"R-20542\", \"available\": true, \"status\": \"Active\", \"benefit_code\": \"HSP-C\", \"district\": \"Ash Hill\", \"award_monthly\": 1449.67, \"household_size\": 4, \"household\": [{\"name\": \"Sarah Delgado\", \"date_of_birth\": \"1993-09-28\", \"relationship\": \"Applicant\"}, {\"name\": \"Michael Crowley\", \"date_of_birth\": \"2013-08-13\", \"relationship\": \"Son/daughter\"}, {\"name\": \"Patricia Kessler\", \"date_of_birth\": \"2002-09-29\", \"relationship\": \"Spouse/partner\"}, {\"name\": \"Rosa Vance\", \"date_of_birth\": \"2025-11-19\", \"relationship\": \"Son/daughter\"}], \"events\": [{\"date\": \"2025-01-10\", \"type\": \"Note added\", \"detail\": \"Documents received and filed.\"}, {\"date\": \"2025-01-24\", \"type\": \"Evidence received\", \"detail\": \"Referred to employment support.\"}, {\"date\": \"2025-02-26\", \"type\": \"Review completed\", \"detail\": \"Correspondence returned undelivered.\"}, {\"date\": \"2025-04-11\", \"type\": \"Interview scheduled\", \"detail\": \"Referred to employment support.\"}, {\"date\": \"2025-04-30\", \"type\": \"Evidence received\", \"detail\": \"Correspondence returned undelivered.\"}, {\"date\": \"2025-05-14\", \"type\": \"Payment issued\", \"detail\": \"Correspondence returned undelivered.\"}, {\"date\": \"2025-06-04\", \"type\": \"Interview scheduled\", \"detail\": \"Left voicemail, no response.\"}, {\"date\": \"2025-07-02\", \"type\": \"Evidence requested\", \"detail\": \"Attended district office in person.\"}], \"error\": \"\", \"source\": \"api\", \"retrieved_at\": \"2026-08-23T13:20:42.814933\", \"latency_ms\": 329.5}",
+        "at": "2026-08-23T14:36:37.264988"
+      },
+      {
+        "order": 3,
+        "action": "Categorise as Household change, route to Assessment team, priority Same day.",
+        "provision": "3.1",
+        "inputs": "The referral text and the resident's record from api.",
+        "result": "{\"category\": \"Household change\", \"routing\": \"Assessment team\", \"priority\": \"Same day\", \"priority_rationale\": \"A change in care or household circumstances is recorded; assistance may be understated while it waits.\", \"matched_on\": \"household\", \"referrer_urgency\": \"Standard\"}",
+        "at": "2026-08-23T14:36:37.265513"
+      }
+    ],
+    "data_quality_notes": []
+  },
+  "caseworker_action": "Caseworker to review referral and resident history, assess safeguarding implications, and draft the triage note exercising human judgment.",
+  "provenance": {
+    "run_id": "cca5aa08",
+    "actor": "human:William Iverson",
+    "created_at": "2026-08-23T14:36:37"
+  }
+}
