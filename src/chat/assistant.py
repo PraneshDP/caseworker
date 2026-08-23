@@ -181,7 +181,7 @@ class CaseworkerChatbot:
 
         candidates = [
             Path("services/_history_data.json"),
-            Path(self.settings.referrals_path).resolve().parents[1]
+            Path(self.settings.referral_queue_path).resolve().parents[1]
             / "services"
             / "_history_data.json",
         ]
@@ -222,8 +222,8 @@ class CaseworkerChatbot:
                 logger.debug("Failed to fetch run context from manager: %s", exc)
 
         try:
-            refs = load_referrals(self.settings.referrals_path)
-            for r in refs:
+            result = load_referrals(self.settings.referral_queue_path)
+            for r in result.referrals:
                 context["referrals"][r.referral_id] = r.to_dict()
         except Exception as exc:
             logger.debug("Failed loading referrals for chat context: %s", exc)
