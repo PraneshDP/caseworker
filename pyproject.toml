@@ -30,3 +30,12 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["src*"]
+
+[tool.pyright]
+include = ["src", "tests"]
+extraPaths = [".", "src"]
+
+[tool.pyrefly]
+include = ["src", "tests"]
+extraPaths = [".", "src"]
+
