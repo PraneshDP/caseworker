@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     # --- LLM ---------------------------------------------------------------
     gemini_api_key: str = Field(default="", description="Google Gemini API key")
-    gemini_model: str = Field("gemini-2.0-flash", description="Gemini model name")
+    gemini_model: str = Field("gemini-3.6-flash", description="Gemini model name")
     llm_timeout_seconds: float = Field(30.0, description="Per-request LLM timeout")
     llm_max_retries: int = Field(2, description="Retries after the first attempt")
     llm_retry_backoff_seconds: float = Field(1.5, description="Base for exponential backoff")

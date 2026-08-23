@@ -67,8 +67,8 @@ def get_client(api_key: str, timeout_seconds: float = 30.0) -> Any:
         raise LLMUnavailableError(
             f"google-genai is not importable: {_IMPORT_ERROR or 'unknown import error'}"
         )
-    if not api_key:
-        raise LLMUnavailableError("No GEMINI_API_KEY configured.")
+    if not api_key or api_key.startswith("your-") or not api_key.startswith("AIza"):
+        raise LLMUnavailableError("Invalid or missing GEMINI_API_KEY. Gemini API keys start with 'AIzaSy...'. Falling back to deterministic mode.")
 
     if _client is None or _client_key != api_key:
         kwargs: dict[str, Any] = {"api_key": api_key}
@@ -136,7 +136,7 @@ def _is_retryable(exc: Exception) -> bool:
 def call_llm(
     prompt: str,
     api_key: str,
-    model: str = "gemini-2.0-flash",
+    model: str = "gemini-3.6-flash",
     temperature: float = 0.1,
     *,
     timeout_seconds: float = 30.0,
