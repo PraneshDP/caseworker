@@ -784,9 +784,12 @@
         `;
       }
 
-      const modeBadge = (res.mode === 'llm') 
-        ? '<span class="badge" style="background:#e0f2fe;color:#0284c7;">Gemini 3.6</span>'
-        : '<span class="badge">Grounded</span>';
+      let modeBadge = '<span class="badge">Grounded</span>';
+      if (res.mode === 'groq') {
+        modeBadge = '<span class="badge" style="background:#fef3c7;color:#b45309;">Groq NLP</span>';
+      } else if (res.mode === 'gemini' || res.mode === 'llm') {
+        modeBadge = '<span class="badge" style="background:#e0f2fe;color:#0284c7;">Gemini 3.6</span>';
+      }
 
       aiBubble.innerHTML = `
         <div class="chat-bubble-header">

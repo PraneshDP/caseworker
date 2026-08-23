@@ -22,7 +22,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings — loaded from the .env file at project root."""
 
-    # --- LLM ---------------------------------------------------------------
+    # --- LLM & NLP ---------------------------------------------------------
+    groq_api_key: str = Field(default="", description="Groq API key for ultra-fast multilingual NLP inference")
+    groq_model: str = Field("openai/gpt-oss-120b", description="Groq model name")
     gemini_api_key: str = Field(default="", description="Google Gemini API key")
     gemini_model: str = Field("gemini-3.6-flash", description="Gemini model name")
     llm_timeout_seconds: float = Field(30.0, description="Per-request LLM timeout")

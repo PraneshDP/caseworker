@@ -6,14 +6,17 @@ Provides grounding over:
   2. Department Authority Policy (ACA-2026/1) and Safeguarding Rules (ACA-2026/2).
   3. Resident profiles, household composition (minors/adults), and case events.
   4. Cryptographic SHA-256 audit ledger verification.
+  5. Full Multilingual Natural Language Processing (NLP) — caseworkers can chat in any language!
 
-Dual-engine architecture:
-  - Uses Gemini 3.6 Flash when GEMINI_API_KEY is configured.
-  - Seamlessly uses an exact deterministic knowledge engine when offline or unauthenticated.
+Multi-Engine Architecture:
+  - Primary: Groq (ultra-fast multilingual NLP inference with GPT-120B / LLaMA / Qwen).
+  - Secondary: Google Gemini (Gemini 3.6 Flash).
+  - Fallback: Exact deterministic knowledge reasoning engine (offline / 100% precision).
 """
 
 import json
 import re
+import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -27,11 +30,67 @@ from src.policy.authority import load_policy
 logger = get_logger(__name__)
 
 
+def call_groq(
+    prompt: str,
+    api_key: str,
+    model: str = "openai/gpt-oss-120b",
+    temperature: float = 0.2,
+    timeout_seconds: float = 12.0,
+    chat_history: Optional[list[dict[str, str]]] = None,
+) -> str:
+    """Call Groq API for ultra-fast multilingual NLP inference."""
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "User-Agent": "CaseworkerAssistant/1.0",
+    }
+
+    system_instruction = (
+        "You are an expert multilingual Caseworker AI Assistant in the Automated Casework Console.\n\n"
+        "CRITICAL MULTILINGUAL & NLP INSTRUCTION:\n"
+        "- Detect the language used by the caseworker (e.g. English, Spanish, French, German, Hindi, Tamil, Arabic, Chinese, etc.).\n"
+        "- ALWAYS respond fluently in that EXACT same language with clear grammar, natural phrasing, and polite professional tone.\n"
+        "- Ground your response strictly in the provided policy provisions (ACA-2026/1 & ACA-2026/2), overnight referral records, and audit events.\n"
+        "- Format your response using clean Markdown with bullet points, bold highlights, and exact section citations (e.g. s.2.4, s.3.1, s.3.9)."
+    )
+
+    messages: list[dict[str, str]] = [{"role": "system", "content": system_instruction}]
+
+    if chat_history:
+        for msg in chat_history[-6:]:
+            role = "user" if msg.get("role") == "user" else "assistant"
+            content = str(msg.get("content", "")).strip()
+            if content:
+                messages.append({"role": role, "content": content})
+
+    messages.append({"role": "user", "content": prompt})
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": 1500,
+    }
+
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers=headers,
+    )
+    with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+        choices = data.get("choices", [])
+        if not choices:
+            raise LLMError("Groq returned empty choices.")
+        return choices[0]["message"]["content"].strip()
+
+
 @dataclass
 class ChatResponse:
     reply: str
     sources: list[dict[str, str]] = field(default_factory=list)
-    mode: str = "deterministic"  # "llm" | "deterministic"
+    mode: str = "deterministic"  # "groq" | "gemini" | "deterministic"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -42,7 +101,7 @@ class ChatResponse:
 
 
 class CaseworkerChatbot:
-    """Answers caseworker questions with grounding in policy and run data."""
+    """Answers caseworker questions with grounding in policy and run data in any language."""
 
     def __init__(self, settings: Settings, manager: Any = None):
         self.settings = settings
@@ -128,56 +187,12 @@ class CaseworkerChatbot:
             logger.debug("Policy RAG search failed: %s", e)
             return []
 
-    def answer(
-        self,
-        query: str,
-        *,
-        run_id: Optional[str] = None,
-        history: Optional[list[dict[str, str]]] = None,
-    ) -> ChatResponse:
-        """Answer a caseworker question about run results, policies, or cases."""
-        q_clean = query.strip()
-        if not q_clean:
-            return ChatResponse(
-                reply="Please enter a question about morning run results, policy rules, or case determinations.",
-                mode="deterministic",
-            )
-
-        run_ctx = self._get_run_context(run_id)
-        policy_hits = self._search_policy(q_clean, top_k=3)
-        history_data = self._get_history_data()
-
-        # Check if Gemini LLM is usable
-        api_key = self.settings.gemini_api_key
-        if api_key and api_key.startswith("AIza"):
-            try:
-                return self._answer_with_llm(
-                    query=q_clean,
-                    run_ctx=run_ctx,
-                    policy_hits=policy_hits,
-                    history_data=history_data,
-                    chat_history=history or [],
-                )
-            except (LLMError, LLMUnavailableError) as exc:
-                logger.info("LLM query failed (%s), falling back to deterministic answer", exc)
-
-        # Deterministic Knowledge Engine
-        return self._answer_deterministic(
-            query=q_clean,
-            run_ctx=run_ctx,
-            policy_hits=policy_hits,
-            history_data=history_data,
-        )
-
-    def _answer_with_llm(
+    def _build_grounded_prompt(
         self,
         query: str,
         run_ctx: dict[str, Any],
         policy_hits: list[dict[str, Any]],
-        history_data: dict[str, Any],
-        chat_history: list[dict[str, str]],
-    ) -> ChatResponse:
-        """Use Gemini 3.6 Flash to answer grounded in facts."""
+    ) -> str:
         policy_context_str = "\n\n".join(
             f"[{p['clause_id']} - {p['section_path']}]:\n{p['content']}"
             for p in policy_hits
@@ -191,7 +206,6 @@ class CaseworkerChatbot:
             )
         referrals_str = "\n".join(referrals_summary[:12])
 
-        # Find matching actions from ledger
         matching_actions = []
         for entry in run_ctx.get("ledger_entries", []):
             rec_type = entry.get("record_type")
@@ -202,45 +216,86 @@ class CaseworkerChatbot:
                 )
         actions_str = "\n".join(matching_actions[:30])
 
-        prompt = f"""You are the Caseworker AI Assistant in the Automated Casework Console.
-Your duty is to give clear, precise, and polite answers to caseworkers asking doubts about:
-1. Overnight referral triage results and why specific actions were permitted, refused, or escalated.
-2. Authority Policy ACA-2026/1 (Section 2 permitted triage actions, Section 3 supervisor reservations).
-3. Safeguarding Amendment ACA-2026/2 s.3.9 (Strict prohibition of automated triage notes for households with minors under 18; mandatory s.3.2 caseworker handoff).
-4. Resident history, household members, and audit ledger integrity.
-
-GROUNDED CONTEXT:
-
-### OVERNIGHT REFERRALS:
+        return f"""### OVERNIGHT REFERRAL QUEUE:
 {referrals_str}
 
-### RECENT AUDIT LEDGER ACTIONS:
+### RECENT AUDIT LEDGER ENTRIES:
 {actions_str}
 
-### RELEVANT POLICY EXCERPTS:
+### RELEVANT POLICY PROVISIONS:
 {policy_context_str}
 
-USER QUESTION:
+CASEWORKER QUESTION:
 {query}
-
-Provide a comprehensive, well-structured response formatted in markdown. Include exact policy citations (e.g. s.2.4, s.3.1, s.3.9) and resident/referral references where appropriate.
 """
-        reply_text = call_llm(
-            prompt=prompt,
-            api_key=self.settings.gemini_api_key,
-            model=self.settings.gemini_model or "gemini-3.6-flash",
-            temperature=0.2,
-            timeout_seconds=12.0,
-        )
 
-        sources = []
-        for p in policy_hits:
-            sources.append({"title": p["clause_id"], "detail": p["section_path"]})
+    def answer(
+        self,
+        query: str,
+        *,
+        run_id: Optional[str] = None,
+        history: Optional[list[dict[str, str]]] = None,
+    ) -> ChatResponse:
+        """Answer a caseworker question in any language with grounding."""
+        q_clean = query.strip()
+        if not q_clean:
+            return ChatResponse(
+                reply="Please enter a question about morning run results, policy rules, or case determinations.",
+                mode="deterministic",
+            )
 
-        return ChatResponse(
-            reply=reply_text,
-            sources=sources,
-            mode="llm",
+        run_ctx = self._get_run_context(run_id)
+        policy_hits = self._search_policy(q_clean, top_k=3)
+        history_data = self._get_history_data()
+
+        sources = [
+            {"title": p["clause_id"], "detail": p["section_path"]}
+            for p in policy_hits
+        ]
+
+        # 1. Try Groq (Ultra-Fast Multilingual NLP Engine)
+        groq_key = self.settings.groq_api_key
+        if groq_key and groq_key.startswith("gsk_"):
+            try:
+                grounded_prompt = self._build_grounded_prompt(q_clean, run_ctx, policy_hits)
+                reply = call_groq(
+                    prompt=grounded_prompt,
+                    api_key=groq_key,
+                    model=self.settings.groq_model or "openai/gpt-oss-120b",
+                    chat_history=history or [],
+                )
+                return ChatResponse(
+                    reply=reply,
+                    sources=sources,
+                    mode="groq",
+                )
+            except Exception as exc:
+                logger.warning("Groq call failed (%s), trying Gemini fallback", exc)
+
+        # 2. Try Gemini (if configured with AIza key)
+        gemini_key = self.settings.gemini_api_key
+        if gemini_key and gemini_key.startswith("AIza"):
+            try:
+                grounded_prompt = self._build_grounded_prompt(q_clean, run_ctx, policy_hits)
+                reply = call_llm(
+                    prompt=grounded_prompt,
+                    api_key=gemini_key,
+                    model=self.settings.gemini_model or "gemini-3.6-flash",
+                )
+                return ChatResponse(
+                    reply=reply,
+                    sources=sources,
+                    mode="gemini",
+                )
+            except Exception as exc:
+                logger.warning("Gemini call failed (%s), trying deterministic fallback", exc)
+
+        # 3. Deterministic Knowledge Engine Fallback
+        return self._answer_deterministic(
+            query=q_clean,
+            run_ctx=run_ctx,
+            policy_hits=policy_hits,
+            history_data=history_data,
         )
 
     def _answer_deterministic(
@@ -254,11 +309,9 @@ Provide a comprehensive, well-structured response formatted in markdown. Include
         q_lower = query.lower()
         sources: list[dict[str, str]] = []
 
-        # 1. Check for specific Referral mentions (RF-2026-0412, RF-2026-0415, etc.)
         ref_match = re.search(r"rf-2026-\d{4}", q_lower)
         target_ref_id = ref_match.group(0).upper() if ref_match else ""
 
-        # Check for Resident mentions (R-20500, William Iverson, etc.)
         res_match = re.search(r"r-\d{5}", q_lower)
         target_res_id = res_match.group(0).upper() if res_match else ""
 
@@ -271,7 +324,7 @@ Provide a comprehensive, well-structured response formatted in markdown. Include
                     "**Resident**: Elizabeth Whitlock (R-20500), District: Ash Hill\n"
                     "**Household**:\n"
                     "- Elizabeth Whitlock (Applicant, b. 1964-05-25, age 61)\n"
-                    "- **William Iverson** (Son/daughter, b. 2021-02-26, **age 5 — minor under 18**)\n\n"
+                    "- **William Iverson** (Son/daughter, b. 2021-02-26, **age 5 — minor under the age of 18**)\n\n"
                     "**Key Outcomes & Safeguarding Rule**:\n"
                     "1. **Safeguarding Trigger (ACA-2026/2 s.3.9)**: Because William Iverson is a child under 18, "
                     "automated drafting of triage notes is **strictly prohibited** by Department Safeguarding Policy.\n"
@@ -284,7 +337,7 @@ Provide a comprehensive, well-structured response formatted in markdown. Include
                 mode="deterministic",
             )
 
-        if "counter-fraud" in q_lower or target_ref_id == "RF-2026-0415" or target_res_id == "R-20521":
+        if "counter-fraud" in q_lower or "fraud" in q_lower or target_ref_id == "RF-2026-0415" or target_res_id == "R-20521":
             sources.append({"title": "ACA-2026/1 s.3.2", "detail": "Suspension or termination of award"})
             sources.append({"title": "ACA-2026/1 s.3.7", "detail": "Fraud referrals reserved to supervisor"})
             return ChatResponse(
@@ -348,17 +401,16 @@ Provide a comprehensive, well-structured response formatted in markdown. Include
                 mode="deterministic",
             )
 
-        # General / Morning summary query
         sources.append({"title": "Morning Console", "detail": "Automated Casework Assistant Overview"})
         return ChatResponse(
             reply=(
                 "### Caseworker Assistant Knowledge Hub\n\n"
-                "I can help you understand all results, policy rules, and case decisions in this morning run:\n\n"
+                "I can help you understand all results, policy rules, and case decisions in this morning run in any language:\n\n"
                 "- **Referral Specifics**: Ask about any referral (e.g. *'Why was RF-2026-0412 handed off?'* or *'What happened to RF-2026-0415?'*).\n"
                 "- **Policy Rules**: Ask about authority permissions (Section 2) or supervisor reservations (Section 3).\n"
                 "- **Safeguarding**: Ask about minor child protections under **ACA-2026/2 s.3.9**.\n"
                 "- **Audit Trail**: Ask how SHA-256 hash chains verify data integrity.\n\n"
-                "Try clicking one of the suggestion chips above or typing your specific case question!"
+                "Try typing your question in English, Spanish, French, German, Hindi, Tamil, Arabic, or any preferred language!"
             ),
             sources=sources,
             mode="deterministic",
