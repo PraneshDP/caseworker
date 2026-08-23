@@ -287,10 +287,17 @@
     try {
       await api('/api/runs/current/cancel', { method: 'POST' });
       showToast('Run cancelled', 'warn');
-      el.btnStart.disabled = false;
-      el.btnCancel.disabled = true;
     } catch (err) {
       showToast(err.message, 'error');
+    } finally {
+      el.btnStart.disabled = false;
+      el.btnCancel.disabled = true;
+      try {
+        const res = await api('/api/runs/current');
+        if (res && res.state) {
+          updateRunUI(res.state, res.pending || []);
+        }
+      } catch (_) {}
     }
   }
 
@@ -316,8 +323,13 @@
         el.progressText.textContent = 'Morning run completed.';
         el.progressFill.style.width = '100%';
         loadRunHistory();
+      } else if (state.status === 'cancelled') {
+        el.runId.textContent = `run ${state.run_id || 'cancelled'}`;
+        el.progressText.textContent = 'Run cancelled — press “Start morning run” to start.';
+        el.progressFill.style.width = '0%';
       } else if (state.status === 'failed') {
         el.progressText.textContent = `Run failed: ${state.error || ''}`;
+        el.progressFill.style.width = '0%';
       } else {
         el.progressText.textContent = 'Idle — press “Start morning run”.';
         el.progressFill.style.width = '0%';
