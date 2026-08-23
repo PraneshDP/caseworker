@@ -607,28 +607,42 @@
     }
   }
 
-  function appendTrace(event) {
-    const item = document.createElement('div');
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-    let kClass = 'k-ok';
-    if (event.event && event.event.includes('gated')) kClass = 'k-gate';
-    if (event.event && (event.event.includes('refused') || event.event.includes('error'))) kClass = 'k-block';
-    if (event.event && event.event.includes('referral')) kClass = 'k-case';
-    if (event.event && event.event.includes('decision')) kClass = 'k-decide';
+  let traceEventsList = [];
 
-    item.className = `trace-item ${kClass}`;
-    item.innerHTML = `
-      <span class="trace-time">${timeStr}</span>
-      <div class="trace-text">
-        <b>${event.event}</b>
-        <span class="dim">${event.payload && event.payload.detail ? event.payload.detail : (event.payload && event.payload.referral_id ? event.payload.referral_id : '')}</span>
-        ${el.traceVerbose.checked ? `<pre class="code">${JSON.stringify(event.payload || {}, null, 2)}</pre>` : ''}
-      </div>
-    `;
-    el.trace.appendChild(item);
+  function renderTrace() {
+    if (!el.trace) return;
+    el.trace.innerHTML = '';
+    traceEventsList.forEach(event => {
+      const item = document.createElement('div');
+      const timeStr = event._timeStr || (new Date()).toLocaleTimeString();
+      let kClass = 'k-ok';
+      if (event.event && event.event.includes('gated')) kClass = 'k-gate';
+      if (event.event && (event.event.includes('refused') || event.event.includes('error'))) kClass = 'k-block';
+      if (event.event && event.event.includes('referral')) kClass = 'k-case';
+      if (event.event && event.event.includes('decision')) kClass = 'k-decide';
+
+      item.className = `trace-item ${kClass}`;
+      item.innerHTML = `
+        <span class="trace-time">${timeStr}</span>
+        <div class="trace-text">
+          <b>${event.event}</b>
+          <span class="dim">${event.payload && event.payload.detail ? event.payload.detail : (event.payload && event.payload.referral_id ? event.payload.referral_id : '')}</span>
+          ${el.traceVerbose && el.traceVerbose.checked ? `<pre class="code">${JSON.stringify(event.payload || {}, null, 2)}</pre>` : ''}
+        </div>
+      `;
+      el.trace.appendChild(item);
+    });
     el.trace.scrollTop = el.trace.scrollHeight;
   }
+
+  function appendTrace(event) {
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    event._timeStr = timeStr;
+    traceEventsList.push(event);
+    renderTrace();
+  }
+
 
   function setupEventListeners() {
     el.tabs.forEach(tab => {
@@ -661,7 +675,9 @@
 
     el.btnStart.addEventListener('click', startRun);
     el.btnCancel.addEventListener('click', cancelRun);
+    if (el.traceVerbose) el.traceVerbose.addEventListener('change', renderTrace);
     el.auditRunSelect.addEventListener('change', () => loadAuditLedger(el.auditRunSelect.value));
+
     el.btnLoadAudit.addEventListener('click', () => loadAuditLedger(el.auditRunSelect.value));
     el.btnVerify.addEventListener('click', verifyCurrentChain);
     el.btnGuardrails.addEventListener('click', loadGuardrails);
