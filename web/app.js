@@ -14,6 +14,7 @@
   let activeTab = 'review';
   let activeActionFilter = 'all';
   let currentEditAction = null;
+  let latestSeqAtRunStart = 0;
 
   // --- DOM Elements ---
   const el = {
